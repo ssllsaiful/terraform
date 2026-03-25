@@ -13,7 +13,7 @@ on:
           - destroy
 
 jobs:
-  terraform_operation: # Removed spaces here to prevent syntax errors
+  terraform_operation:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,16 +28,19 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-south-1
+          aws-region: us-west-1
 
       - name: Terraform Init
         run: terraform init
 
       - name: Terraform Action
-        # This script checks your manual selection from the dropdown
         run: |
           if [ "${{ github.event.inputs.action }}" == "apply" ]; then
+            # Attempt to import first in case it was created in a previous session
+            terraform import aws_s3_bucket.jvai_cdn_bucket jvai-cdn-bucket-unique || true
             terraform apply -auto-approve
           else
+            # Link the bucket to the state before trying to destroy
+            terraform import aws_s3_bucket.jvai_cdn_bucket jvai-cdn-bucket-unique || true
             terraform destroy -auto-approve
           fi
