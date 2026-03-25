@@ -3,9 +3,9 @@ provider "aws" {
 }
 
 # --- Single S3 Bucket ---
-resource "aws_s3_bucket" "jvai-cdn_bucket" {
+resource "aws_s3_bucket" "jvai_cdn_bucket" {
 
-  bucket = "jvai-cdn_bucket" 
+  bucket = "jvai_cdn_bucket" 
 }
 
 # Allow Public Access (Required for the policy to work)
