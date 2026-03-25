@@ -1,15 +1,24 @@
 name: Terraform S3
 
 on:
-  workflow_dispatch:   # 👈 manual trigger button
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        default: 'apply'
+        type: choice
+        options:
+          - apply
+          - destroy
 
 jobs:
-  Create or Destroy S3 Bucket:
+  terraform_operation: # Removed spaces here to prevent syntax errors
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -19,15 +28,16 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-west-1
+          aws-region: ap-south-1
 
       - name: Terraform Init
         run: terraform init
 
       - name: Terraform Action
-              run: |
-                if [ "${{ github.event.inputs.action }}" == "apply" ]; then
-                  terraform apply -auto-approve
-                else
-                  terraform destroy -auto-approve
-                fi
+        # This script checks your manual selection from the dropdown
+        run: |
+          if [ "${{ github.event.inputs.action }}" == "apply" ]; then
+            terraform apply -auto-approve
+          else
+            terraform destroy -auto-approve
+          fi
