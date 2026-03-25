@@ -4,7 +4,7 @@ on:
   workflow_dispatch:   # 👈 manual trigger button
 
 jobs:
-  terraform:
+  Create or Destroy S3 Bucket:
     runs-on: ubuntu-latest
 
     steps:
