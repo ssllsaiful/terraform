@@ -2,15 +2,14 @@ provider "aws" {
   region = "us-west-1" 
 }
 
-# --- Single S3 Bucket ---
-resource "aws_s3_bucket" "jvai_cdn_bucket" {
-
-  bucket = "jvai_cdn_bucket" 
+resource "aws_s3_bucket" "jvai-cdn-bucket" {
+  bucket = "jvai-cdn-bucket" 
 }
 
-# Allow Public Access (Required for the policy to work)
+# Allow Public Access
 resource "aws_s3_bucket_public_access_block" "allow_public" {
-  bucket = aws_s3_bucket.cdn_bucket.id
+  # Fixed: Now matches the name 'jvai-cdn-bucket' above
+  bucket = aws_s3_bucket.jvai-cdn-bucket.id
 
   block_public_acls       = false
   block_public_policy     = false
@@ -20,7 +19,8 @@ resource "aws_s3_bucket_public_access_block" "allow_public" {
 
 # Public Read Policy
 resource "aws_s3_bucket_policy" "public_read" {
-  bucket = aws_s3_bucket.cdn_bucket.id
+  # Fixed: Now matches the name 'jvai-cdn-bucket'
+  bucket = aws_s3_bucket.jvai-cdn-bucket.id
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -29,19 +29,20 @@ resource "aws_s3_bucket_policy" "public_read" {
         Effect    = "Allow"
         Principal = "*"
         Action    = "s3:GetObject"
-        Resource  = "${aws_s3_bucket.cdn_bucket.arn}/*"
+        Resource  = "${aws_s3_bucket.jvai-cdn-bucket.arn}/*"
       },
     ]
   })
-  # This ensures the 'Public Access Block' is disabled BEFORE the policy is applied
   depends_on = [aws_s3_bucket_public_access_block.allow_public]
 }
 
 # --- Outputs ---
 output "bucket_name" {
-  value = aws_s3_bucket.cdn_bucket.id
+  # Fixed: Matches the name 'jvai-cdn-bucket'
+  value = aws_s3_bucket.jvai-cdn-bucket.id
 }
 
 output "bucket_url" {
-  value = "https://${aws_s3_bucket.cdn_bucket.bucket}.s3.us-west-1.amazonaws.com"
+  # Fixed: Matches the name 'jvai-cdn-bucket'
+  value = "https://${aws_s3_bucket.jvai-cdn-bucket.bucket}.s3.us-west-1.amazonaws.com"
 }
